@@ -1,6 +1,6 @@
 type state = int32
 module StateSet : Set.S with type elt = int32
-module CharMap : Map.S with type key = char
+module CharMap : Map.S with type key = string
 type transitions = StateSet.t CharMap.t
 
 type nfa = {
@@ -15,6 +15,7 @@ type nfa = {
       set of states *)
 }
 
-val accept : nfa -> char list -> bool
+(* TODO, the type string list is actually not correct. *)
+val accept : nfa -> string list -> bool
 (** [accept nfa l] is [true] iff the nfa [nfa] accepts the
     character sequence [l] *)

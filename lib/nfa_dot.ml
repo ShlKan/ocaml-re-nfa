@@ -119,7 +119,7 @@ let digraph_of_nfa : Nfa.nfa -> Digraph.t =
           (fun c targets ->
             Nfa.StateSet.iter
               (fun target ->
-                add_edge state c target;
+                add_edge state (String.get c 0) target;
                 step target)
               targets)
           (nfa.Nfa.next state);

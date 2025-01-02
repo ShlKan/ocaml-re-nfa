@@ -6,7 +6,7 @@ open Nfa
     (The modification: we label character sets rather than characters
      to prevent a state explosion.)
  *)
-module C = Set.Make(Char)
+module C = Set.Make(String)
 type charset = C.t
 
 (** A 'letter' is a character set paired with an identifier that
@@ -199,11 +199,7 @@ let empty = Empty
 
 let oneof cs = match C.cardinal cs with 0 -> Empty | _ -> Char cs
 
-let range_ l h =
-  let rec loop i h acc =
-    if i = h then         C.add (Char.chr i) acc
-    else loop (succ i) h (C.add (Char.chr i) acc)
-  in loop (Char.code l) (Char.code h) C.empty
+let range_ l h = C.add  (Format.sprintf "%c-%c" l h) C.empty
 
 let range l h = Char (range_ l h)
 let any_ = range_ (Char.chr 0) (Char.chr 255)
@@ -234,11 +230,12 @@ struct
     let interpret { negated; elements } =
       let s =
         List.fold_right
-          (function Char c -> C.add c
+          (function Char c -> C.add (String.make 1 c)
                   | Range (c1,c2) -> C.union (range_ c1 c2))
-          elements C.empty in
-      if negated then C.diff any_ s
-      else s
+          elements C.empty in s
+       (*negation is not done here *)   
+      (* if negated then C.diff any_ s
+      else s *)
 
     let parse_element = function
       | [] -> raise Fail
@@ -266,7 +263,8 @@ struct
                     caret: bool;
                     lbracket: bool;
                     ranges: (char * char) list; }
-    let ranges (set : C.t) =
+(* TODO : the following code are so useful. It is for round-trip testing
+                    let ranges (set : C.t) =
       let adjacent c1 c2 = abs (Char.code c1 - Char.code c2) = 1 in
       match
         C.fold
@@ -322,11 +320,12 @@ struct
       | [], false, false, false -> pr "[%s%c-%c]"
                                      (if complement then "" else "^")
                                      (Char.chr 0) (Char.chr 255)
+                                     *)
   end
 
   type t =
     | Opt : t -> t
-    | Chr : char -> t 
+    | Chr : string -> t 
     | Alt : t * t -> t
     | Seq : t * t -> t
     | Star : t -> t
@@ -368,7 +367,7 @@ struct
     | '['::rest -> Some (re_parse_bracketed rest)
     | [] | ((')'|'|'|'*'|'?'|'+') :: _) -> None
     | '.' :: rest -> Some (Any, rest)
-    | h :: rest -> Some (Chr h, rest)
+    | h :: rest -> Some (Chr (String.make 1 h), rest)
 
   (** rsuffixed ::= ratom
                     atom *  
@@ -410,8 +409,10 @@ end
 
 let parse s = Parse.(interpret (parse s))
 
+(*
+For round trip testing
 let unparse_charset s =
   let pos = Parse.Bracket.unparse ~complement:false s
   and neg = Parse.Bracket.unparse ~complement:true (C.diff any_ s) in
   if String.length pos <= String.length neg then pos else neg
-              
+              *)

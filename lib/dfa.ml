@@ -6,7 +6,7 @@ module StateMap = Map.Make(Int32)
 module CharMap = Nfa.CharMap
 
 (* val union : (key -> 'a -> 'a -> 'a option) -> 'a t -> 'a t -> 'a t *)
-let charmap_union (type a) (f : char -> a -> a -> a option) =
+let charmap_union (type a) (f : string -> a -> a -> a option) =
   let f k x y = match x, y with
     | None    , None    -> None
     | Some v  , None    -> Some v
@@ -38,7 +38,7 @@ let fold_states : 'a. (state -> 'a -> 'a) -> dfa -> 'a -> 'a =
       end
   in visit dfa.start; !v
 
-let fold_transitions: 'a. (state * char * state -> 'a -> 'a) -> dfa -> 'a -> 'a =
+let fold_transitions: 'a. (state * string * state -> 'a -> 'a) -> dfa -> 'a -> 'a =
   fun f dfa init ->
   fold_states
     (fun src v -> CharMap.fold (fun c dst -> f (src, c, dst)) (dfa.next src) v)

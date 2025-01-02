@@ -1,6 +1,6 @@
 type state = int32
 module StateSet = Set.Make(Int32)
-module CharMap = Map.Make(Char)
+module CharMap = Map.Make(String)
 type transitions = StateSet.t CharMap.t
 
 type nfa = {

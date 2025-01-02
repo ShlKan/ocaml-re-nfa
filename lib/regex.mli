@@ -3,7 +3,7 @@
 type t
 (** The type of regular expressions *)
 
-type charset = Set.Make(Char).t
+type charset = Set.Make(String).t
 (** Sets of characters *)
 
 val empty : t
@@ -21,7 +21,7 @@ val oneof : charset -> t
 val range : char -> char -> t
 (** [range l h] accepts any character in the range [l]..[h] *)
 
-val chr : char -> t
+val chr : string -> t
 (** [chr c] accepts exactly the character [c] *)
 
 val seq : t -> t -> t
@@ -58,7 +58,8 @@ val parse : string -> t
    Raises [Parse_error] on parse error
 *)
 
-val unparse_charset : charset -> string
+(*
+val unparse_charset : charset -> string *)
 (** [unparse_charset cs] is a string denoting a regular expression
     that accepts any character in [cs], and nothing else *)
 

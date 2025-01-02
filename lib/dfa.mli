@@ -16,7 +16,7 @@ val minimize : dfa -> dfa
 (** [minimize dfa] is a minimized dfa equivalent to the dfa [dfa],
     obtained via Brzozowski's algorithm *)
 
-val accept : dfa -> char list -> bool
+val accept : dfa -> string list -> bool
 (** [accept dfa l] is [true] iff the dfa [dfa] accepts the
     character sequence [l] *)
 
